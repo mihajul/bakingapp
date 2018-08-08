@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.udacity.bakingapp">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -33,13 +34,30 @@
         <activity
             android:name=".StepDetailActivity"
             android:label="@string/title_step_detail"
-            android:parentActivityName=".RecipeDetailActivity"
             android:launchMode="singleTop"
+            android:parentActivityName=".RecipeDetailActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.udacity.bakingapp.RecipeDetailActivity" />
         </activity>
+
+        <receiver android:name="com.udacity.bakingapp.BakingAppWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.udacity.bakingapp.action.APPWIDGET_DATA_LOADED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/baking_app_widget_info" />
+        </receiver>
+
+        <service
+            android:name=".widget.WidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <service android:name=".widget.RemoteFetchService" />
+
     </application>
 
 </manifest>

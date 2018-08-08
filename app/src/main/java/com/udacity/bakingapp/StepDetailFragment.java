@@ -102,9 +102,12 @@ public class StepDetailFragment extends Fragment {
             }
             initializePlayer(Uri.parse(step.getVideoURL()), currentTime);
             mPlayerView.setVisibility(View.VISIBLE);
+        }else {
+            mPlayerView.setVisibility(View.GONE);
         }
+
+        ImageView imageView = (ImageView) rootView.findViewById(R.id.imageView);
         if (!step.getThumbnailURL().isEmpty()) {
-            ImageView imageView = (ImageView) rootView.findViewById(R.id.imageView);
             Picasso.with(this.getContext())
                     .load(step.getThumbnailURL())
                     .placeholder(R.drawable.placeholder)
@@ -113,6 +116,8 @@ public class StepDetailFragment extends Fragment {
                     .centerCrop()
                     .into(imageView);
             imageView.setVisibility(View.VISIBLE);
+        }else {
+            imageView.setVisibility(View.GONE);
         }
 
         final boolean mTwoPane = getActivity().findViewById(R.id.step_detail_container) != null;

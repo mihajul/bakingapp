@@ -4,4 +4,6 @@
     <string name="error_message">There was an error getting the recipe list. Please check your network connection.</string>
     <string name="title_step_detail">Step Detail</string>
     <string name="arrow_descriptor">View</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 </resources>

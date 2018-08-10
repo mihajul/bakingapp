@@ -3,6 +3,7 @@ package com.udacity.bakingapp.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.text.NumberFormat;
 import java.util.Date;
 
 /**
@@ -63,10 +64,6 @@ public class Ingredient implements Parcelable {
 
     }
 
-    public String toString() {
-        return ingredient;
-    }
-
     private Ingredient(Parcel in){
         id = in.readInt();
         quantity = in.readDouble();
@@ -86,4 +83,17 @@ public class Ingredient implements Parcelable {
         }
 
     };
+
+    @Override
+    public String toString() {
+        StringBuilder ingredientsBuilder = new StringBuilder();
+        String quantity = NumberFormat.getInstance().format(this.getQuantity());
+        ingredientsBuilder.append("- ");
+        ingredientsBuilder.append(quantity);
+        ingredientsBuilder.append(" ");
+        ingredientsBuilder.append(this.getMeasure());
+        ingredientsBuilder.append(" x ");
+        ingredientsBuilder.append(this.getIngredient());
+        return ingredientsBuilder.toString();
+    }
 }

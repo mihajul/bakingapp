@@ -6,32 +6,39 @@ import java.util.List;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService.RemoteViewsFactory;
 
+import com.udacity.bakingapp.BakingAppWidget;
 import com.udacity.bakingapp.R;
+import com.udacity.bakingapp.model.Ingredient;
 import com.udacity.bakingapp.model.Recipe;
+import com.udacity.bakingapp.model.Step;
 
 public class ListProvider implements RemoteViewsFactory {
-    private List<Recipe> listItemList = new ArrayList<Recipe>();
+    private List<Ingredient> listItemList = new ArrayList<Ingredient>();
     private Context context = null;
     private int appWidgetId;
+    public static final String LOG_TAG = ListProvider.class.getName();
 
     public ListProvider(Context context, Intent intent) {
         this.context = context;
         appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
 
-        populateListItem();
+        Recipe recipe = BakingAppWidget.currentRecipe; //intent.getParcelableExtra(BakingAppWidget.RECIPE_KEY);
+
+        Log.d(LOG_TAG, "ListProvider" + appWidgetId + " extras: " + intent.getExtras().size());
+        Log.d(LOG_TAG, "ListProvider" + appWidgetId + " recipe: " +  recipe);
+
+        if(recipe!=null) {
+            listItemList.clear();
+            listItemList.addAll(recipe.getIngredients());
+        }
+
     }
 
-    private void populateListItem() {
-        if(RemoteFetchService.listItemList !=null )
-            listItemList = (ArrayList<Recipe>) ((ArrayList<Recipe>) RemoteFetchService.listItemList).clone();
-        else
-            listItemList = new ArrayList<Recipe>();
-
-    }
 
     @Override
     public int getCount() {
@@ -50,10 +57,14 @@ public class ListProvider implements RemoteViewsFactory {
      */
     @Override
     public RemoteViews getViewAt(int position) {
+
+        Log.d(LOG_TAG, "ListProvider" + " getViewAt: " +  position);
+
+
         final RemoteViews remoteView = new RemoteViews(
                 context.getPackageName(), R.layout.widget_list_row);
-        Recipe listItem = listItemList.get(position);
-        remoteView.setTextViewText(R.id.content, listItem.getName());
+        Ingredient listItem = listItemList.get(position);
+        remoteView.setTextViewText(R.id.content, listItem.toString());
 
         return remoteView;
     }
@@ -80,6 +91,12 @@ public class ListProvider implements RemoteViewsFactory {
 
     @Override
     public void onDataSetChanged() {
+        Recipe recipe = BakingAppWidget.currentRecipe;
+        if(recipe!=null) {
+            listItemList.clear();
+            listItemList.addAll(recipe.getIngredients());
+        }
+        Log.d(LOG_TAG, "onDataSetChanged " + listItemList.size());
     }
 
     @Override

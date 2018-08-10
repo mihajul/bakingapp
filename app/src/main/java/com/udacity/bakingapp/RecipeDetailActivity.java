@@ -1,30 +1,33 @@
 package com.udacity.bakingapp;
 
-import android.app.Activity;
-import android.graphics.Color;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
+import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.SpannableStringBuilder;
-import android.text.style.BulletSpan;
-import android.view.View;
-import android.widget.ProgressBar;
+import android.util.Log;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.udacity.bakingapp.adapter.RecipeRecyclerViewAdapter;
 import com.udacity.bakingapp.adapter.RecipeStepsRecyclerViewAdapter;
-import com.udacity.bakingapp.loader.RecipeListLoader;
 import com.udacity.bakingapp.model.Ingredient;
 import com.udacity.bakingapp.model.Recipe;
 import com.udacity.bakingapp.model.Step;
 
 import java.text.NumberFormat;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * An activity representing a list of Recipes. This activity
@@ -37,27 +40,36 @@ import java.util.List;
 public class RecipeDetailActivity extends AppCompatActivity {
 
 
+    private static final String LOG_TAG = RecipeDetailActivity.class.getName();
     private boolean mTwoPane;
-    private RecyclerView recyclerView;
-    private ProgressBar mLoadingIndicator;
-    private TextView mErrorMessageDisplay;
+    private static final int LOADER_ID = 0;
     private RecipeStepsRecyclerViewAdapter recipeStepsRecyclerViewAdapter;
     private Recipe recipe;
-    private static final int LOADER_ID = 0;
+
+
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.ingredientsList) TextView ingredientsTextView;
+    @BindView(R.id.step_list) RecyclerView recyclerView;
+    @BindView(R.id.frameLayout) NestedScrollView nestedScrollView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
+        ButterKnife.bind(this);
 
         recipe = getIntent().getParcelableExtra(StepDetailFragment.ARG_ITEM);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setTitle(recipe.getName());
         toolbar.setTitle(recipe.getName());
 
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         if (findViewById(R.id.step_detail_container) != null) {
             mTwoPane = true;
@@ -66,23 +78,20 @@ public class RecipeDetailActivity extends AppCompatActivity {
 
         StringBuilder ingredientsBuilder = new StringBuilder();
         for(Ingredient ingredient : recipe.getIngredients()) {
-            String quantity = NumberFormat.getInstance().format(ingredient.getQuantity());
-            ingredientsBuilder.append("- ");
-            ingredientsBuilder.append(quantity);
-            ingredientsBuilder.append(" ");
-            ingredientsBuilder.append(ingredient.getMeasure());
-            ingredientsBuilder.append(" x ");
-            ingredientsBuilder.append(ingredient.getIngredient());
+            ingredientsBuilder.append(ingredient.toString());
             ingredientsBuilder.append("\n");
         }
 
 
-        TextView ingredientsTextView = (TextView) findViewById(R.id.ingredientsList);
         ingredientsTextView.setText(ingredientsBuilder.toString());
 
-        recyclerView = (RecyclerView) findViewById(R.id.step_list);
         setupRecyclerView((RecyclerView) recyclerView, recipe.getSteps());
+        populateWidgets();
+
+        nestedScrollView.scrollTo(0,0);
+
     }
+
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView, List<Step> steps) {
 
@@ -91,5 +100,33 @@ public class RecipeDetailActivity extends AppCompatActivity {
         recyclerView.setAdapter(recipeStepsRecyclerViewAdapter);
     }
 
+    private void populateWidgets() {
+        Log.d(LOG_TAG, "Setting widget recipe: " + String.valueOf(recipe));
+        BakingAppWidget.currentRecipe = recipe;
+        AppWidgetManager man = AppWidgetManager.getInstance(getApplicationContext());
+        int[] ids = man.getAppWidgetIds(new ComponentName(getApplicationContext(),BakingAppWidget.class));
 
+        Intent widgetUpdateIntent = new Intent();
+        widgetUpdateIntent.setExtrasClassLoader(Recipe.class.getClassLoader());
+        widgetUpdateIntent.setAction(BakingAppWidget.RECIPE_SELECTED);
+        widgetUpdateIntent.putExtra(BakingAppWidget.RECIPE_KEY, recipe);
+        widgetUpdateIntent.putExtra(BakingAppWidget.WIDGET_IDS_KEY, ids);
+        sendBroadcastCompat(this, widgetUpdateIntent);
+
+    }
+    public static void sendBroadcastCompat(Context context, Intent intent) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            context.sendBroadcast(intent);
+            return;
+        }
+
+        Intent broadcastIntent = new Intent(intent);
+        PackageManager pm = context.getPackageManager();
+
+        List<ResolveInfo> broadcastReceivers  = pm.queryBroadcastReceivers(broadcastIntent, 0);
+        for(ResolveInfo info : broadcastReceivers) {
+            broadcastIntent.setClassName(info.activityInfo.packageName, info.activityInfo.name);
+            context.sendBroadcast(broadcastIntent);
+        }
+    }
 }

@@ -10,7 +10,9 @@
         android:baselineAligned="false"
         android:divider="?android:attr/dividerHorizontal"
         android:orientation="vertical"
-        android:showDividers="middle">
+        android:showDividers="middle"
+        android:focusableInTouchMode="true"
+        >
 
 
         <com.google.android.exoplayer2.ui.SimpleExoPlayerView android:id="@+id/playerView"
@@ -25,7 +27,7 @@
             android:id="@+id/imageView"
             android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:textAppearance="?attr/textAppearanceListItem" />
 

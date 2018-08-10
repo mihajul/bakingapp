@@ -34,8 +34,8 @@ import com.udacity.bakingapp.model.Recipe;
 import com.udacity.bakingapp.model.Step;
 
 /**
- * A fragment representing a single Recipe detail screen.
- * This fragment is either contained in a {@link RecipeListActivity}
+ * A fragment representing a single Step detail screen.
+ * This fragment is either contained in a {@link RecipeDetailActivity}
  * in two-pane mode (on tablets) or a {@link StepDetailActivity}
  * on handsets.
  */
@@ -51,10 +51,6 @@ public class StepDetailFragment extends Fragment {
     private SimpleExoPlayerView mPlayerView;
     long currentTime = 0;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public StepDetailFragment() {
     }
 
@@ -181,7 +177,7 @@ public class StepDetailFragment extends Fragment {
     }
 
     private void initializePlayer(Uri mediaUri, long currentTime) {
-        if (mExoPlayer == null) {
+        if (mExoPlayer == null &&  !step.getVideoURL().isEmpty()) {
             TrackSelector trackSelector = new DefaultTrackSelector();
             LoadControl loadControl = new DefaultLoadControl();
             mExoPlayer = ExoPlayerFactory.newSimpleInstance(this.getContext(), trackSelector, loadControl);

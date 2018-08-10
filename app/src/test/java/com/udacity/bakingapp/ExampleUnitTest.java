@@ -1,7 +1,10 @@
 package com.udacity.bakingapp;
 
-import org.junit.Test;
+import com.udacity.bakingapp.model.Ingredient;
 
+
+import org.junit.Assert;
+import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
@@ -11,7 +14,11 @@ import static org.junit.Assert.*;
  */
 public class ExampleUnitTest {
     @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+    public void testIngredientToStringMethod() throws Exception {
+        Ingredient ingredient = new Ingredient();
+        ingredient.setMeasure("TBSP");
+        ingredient.setQuantity(1.0);
+        ingredient.setIngredient("test");
+        Assert.assertEquals("- 1 TBSP x test", ingredient.toString());
     }
 }

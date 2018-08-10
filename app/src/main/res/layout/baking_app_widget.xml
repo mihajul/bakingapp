@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#09C"
+    android:background="#fff"
     android:padding="@dimen/widget_margin">
 
     <TextView
@@ -11,7 +11,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_margin="8dp"
-        android:background="#09C"
+        android:background="#fff"
         android:contentDescription="@string/appwidget_text"
         android:text="@string/appwidget_text"
         android:textColor="#ffffff"
@@ -23,7 +23,15 @@
     <ListView
         android:id="@+id/appwidget_recipelist"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true">
 
     </ListView>
+
+    <TextView android:id="@+id/appwidget_empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FF0000"
+        android:text="Please select a recipe from the app"/>
+
 </RelativeLayout>

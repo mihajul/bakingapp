@@ -45,7 +45,7 @@
         <receiver android:name="com.udacity.bakingapp.BakingAppWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.udacity.bakingapp.action.APPWIDGET_DATA_LOADED" />
+                <action android:name="com.udacity.bakingapp.action.APPWIDGET_RECIPE_SELECTED" />
             </intent-filter>
 
             <meta-data
@@ -56,7 +56,6 @@
         <service
             android:name=".widget.WidgetService"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
-        <service android:name=".widget.RemoteFetchService" />
 
     </application>
 

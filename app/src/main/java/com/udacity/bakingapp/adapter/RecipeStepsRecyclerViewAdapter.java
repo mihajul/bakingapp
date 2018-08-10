@@ -2,9 +2,12 @@ package com.udacity.bakingapp.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +36,7 @@ public class RecipeStepsRecyclerViewAdapter extends RecyclerView.Adapter<RecipeS
     private Recipe recipe;
     private List<Step> mValues;
     private final boolean mTwoPane;
+    public static int currentRow = -1;
 
     public RecipeStepsRecyclerViewAdapter(RecipeDetailActivity parent, Recipe recipe,
                                           boolean twoPane) {
@@ -49,24 +53,25 @@ public class RecipeStepsRecyclerViewAdapter extends RecyclerView.Adapter<RecipeS
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         final Step step = mValues.get(position);
 
         holder.mTextView.setText(step.getShortDescription());
         if(step.getId()!=0) {
             holder.mStepIdTextView.setText(step.getId() + ". ");
-            holder.mStepIdTextView.setVisibility(View.VISIBLE);
         }else {
-            holder.mStepIdTextView.setVisibility(View.INVISIBLE);
+            holder.mStepIdTextView.setText("   ");
         }
         holder.itemView.setTag(mValues.get(position));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
                                                @Override
                                                public void onClick(View view) {
-                                                   showStepDetailActivity(mParentActivity, mTwoPane, recipe, step.getId());
+                                                   showStepDetailActivity(mParentActivity, mTwoPane, recipe, position);
                                                }
                                            }
         );
+
+        colorSelectedItem(holder, position);
     }
 
     public static void showStepDetailActivity(FragmentActivity currentActivity, boolean mTwoPane, Recipe recipe, int stepIndex) {
@@ -85,6 +90,25 @@ public class RecipeStepsRecyclerViewAdapter extends RecyclerView.Adapter<RecipeS
             intent.putExtra(StepDetailFragment.ARG_STEP_INDEX, stepIndex);
             currentActivity.startActivityForResult(intent, 0);
         }
+        if(currentActivity.findViewById(R.id.frameLayout)!=null) {
+            NestedScrollView scrollView = (NestedScrollView) currentActivity.findViewById(R.id.frameLayout);
+            scrollView.scrollTo(0,0);
+        }
+        if(currentActivity.findViewById(R.id.step_list)!=null) {
+            currentRow = stepIndex;
+            RecyclerView recyclerview = currentActivity.findViewById(R.id.step_list);
+            recyclerview.getAdapter().notifyDataSetChanged();
+        }
+    }
+
+    private void colorSelectedItem(final ViewHolder holder, final int position) {
+        if(currentRow == position){
+            holder.cardView.setBackgroundColor(Color.parseColor("#eeeeee"));
+        }
+        else {
+            holder.cardView.setBackgroundColor(Color.parseColor("#ffffff"));
+        }
+
     }
 
     @Override
@@ -104,11 +128,12 @@ public class RecipeStepsRecyclerViewAdapter extends RecyclerView.Adapter<RecipeS
     class ViewHolder extends RecyclerView.ViewHolder {
         final TextView mTextView;
         final TextView mStepIdTextView;
+        final CardView cardView;
         ViewHolder(View view) {
             super(view);
             mTextView = (TextView) view.findViewById(R.id.shortDescription);
             mStepIdTextView = (TextView) view.findViewById(R.id.stepId);
-
+            cardView = (CardView) view.findViewById(R.id.card_view);
         }
     }
 

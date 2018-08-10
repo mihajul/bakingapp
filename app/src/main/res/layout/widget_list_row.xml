@@ -8,9 +8,8 @@
         android:id="@+id/content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minHeight="32dp"
         android:layout_alignParentLeft="true"
-        android:layout_toRightOf="@id/imageView"
-        android:singleLine="true"
         android:textSize="14sp"
         android:textStyle="bold"
         android:text="Content"/>
